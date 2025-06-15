@@ -96,7 +96,7 @@ st.markdown(
 )
 
 # --- VISUALIZATION 1: Renewable Capacity Trend ---
-st.subheader("Renewable Electricity Capacity Trend per Country")
+st.header("Renewable Electricity Capacity Trend per Country")
 st.markdown("This trend shows the clean energy transition efforts in Pacific countries.")
 vis1_countries = st.multiselect('Select countries (visualization 1)', countries, default=countries, key='v1-country')
 vis1_year_min, vis1_year_max = int(df['Year'].min()), int(df['Year'].max())
@@ -152,7 +152,7 @@ st.info(f"Insight: {desc}")
 
 # --- VISUALIZATION 2: CO2 Emissions Trend (if data available) ---
 if 'df_merged' in locals():
-    st.subheader("CO₂ Emissions Trend per Country")
+    st.header("CO₂ Emissions Trend per Country")
     st.markdown("This trend shows the change in CO₂ emissions over time. A decrease in emissions can indicate a successful renewable energy transition.")
     vis2_countries = st.multiselect('Select countries (visualization 2)', countries, default=countries, key='v2-country')
     vis2_year_min, vis2_year_max = int(df['Year'].min()), int(df['Year'].max())
@@ -189,12 +189,12 @@ if 'df_merged' in locals():
 
 # --- VISUALIZATION 3: Scatter Plot Renewable Capacity vs CO2 Emissions ---
 if 'df_merged' in locals():
+    st.header("Correlation of Renewable Capacity & CO₂ Emissions")
+    st.markdown("The following scatter plot shows the direct relationship between renewable electricity capacity and CO₂ emissions. Each point represents a country-year.")
     vis3_countries = st.multiselect('Select countries (visualization 3)', countries, default=countries, key='v3-country')
     vis3_year_min, vis3_year_max = int(df['Year'].min()), int(df['Year'].max())
     vis3_years = st.slider('Select year range (visualization 3)', vis3_year_min, vis3_year_max, (vis3_year_min, vis3_year_max), key='v3-year')
     filtered_merged = df_merged[(df_merged['Country'].isin(vis3_countries)) & (df_merged['Year'] >= vis3_years[0]) & (df_merged['Year'] <= vis3_years[1])]
-    st.subheader("Correlation of Renewable Capacity & CO₂ Emissions")
-    st.markdown("The following scatter plot shows the direct relationship between renewable electricity capacity and CO₂ emissions. Each point represents a country-year.")
     fig3_scatter = px.scatter(
         filtered_merged.dropna(subset=['CO2 Emissions (Mt CO2e)']),
         x='Renewable Capacity (W/capita)',
@@ -212,7 +212,7 @@ else:
     st.warning("CO₂ emissions data not available. Please ensure the CO₂ file is present in the project folder.")
 
 # --- VISUALIZATION 4: Data Table ---
-st.subheader("Data Table: Renewable Capacity per Country & Year")
+st.header("Data Table: Renewable Capacity per Country & Year")
 filtered_table = df.copy()
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -229,6 +229,8 @@ with col3:
     min_val, max_val = float(filtered_table['Renewable Capacity (W/capita)'].min()), float(filtered_table['Renewable Capacity (W/capita)'].max())
     value_range = st.slider('Filter Renewable Capacity (W/capita)', min_val, max_val, (min_val, max_val), key='table-value')
     filtered_table = filtered_table[(filtered_table['Renewable Capacity (W/capita)'] >= value_range[0]) & (filtered_table['Renewable Capacity (W/capita)'] <= value_range[1])]
+# Show only one row for each unique Renewable Capacity (W/capita), but keep country and year columns
+filtered_table = filtered_table.drop_duplicates(subset=['Renewable Capacity (W/capita)'])
 st.dataframe(filtered_table)
 
 # 7. Download Data
